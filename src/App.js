@@ -1,26 +1,67 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import "./App.css";
+import Confetti from "./confetty";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+export class App extends Component {
+  state = {
+    amount: 0,
+    isConfetti: false,
+    mileStone: 10,
+    total: 0
+  };
+
+  handleChange = e => {
+    this.setState({
+      [e.target.id]: e.target.value,
+      isConfetti: false
+    });
+  };
+
+  handleSubmit = e => {
+    e.preventDefault();
+    this.setState(
+      current => ({
+        total: current.total + Number(current.amount),
+        amount: 0
+      }),
+      () => {
+        if (this.state.total >= this.state.mileStone) {
+          this.throwConfety();
+        }
+      }
+    );
+  };
+
+  throwConfety = () => {
+    let nextMileStone = (Math.floor(this.state.total / 10) + 1) * 10;
+
+    this.setState({
+      isConfetti: true,
+      mileStone: nextMileStone
+    });
+  };
+
+  render() {
+    return (
+      <div className="App">
+        {this.state.isConfetti && <Confetti />}
+        <header className="App-header">
+          <p>Add numbers to increase total to see confetti</p>
+          <p>Total {this.state.total}</p>
+          <form className="white" onSubmit={this.handleSubmit}>
+            <input
+              type="number"
+              id="amount"
+              onChange={this.handleChange}
+              value={this.state.amount}
+            />
+            <button type="submit">add</button>
+          </form>
+          <p>Next mileStone {this.state.mileStone}</p>
+        </header>
+      </div>
+    );
+  }
 }
 
 export default App;
